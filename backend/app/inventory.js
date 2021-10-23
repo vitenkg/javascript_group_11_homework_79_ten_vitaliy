@@ -29,17 +29,29 @@ router.get('/:id', async (req, res) => {
     res.send(inventory);
 });
 
-// router()
+router.put ('/:id', upload.single('image'), async (req, res) => {
+    const editItem = {
+        category_id: req.body.category,
+        location_id: req.body.location,
+        name: req.body.name,
+        description: req.body.description,
+    };
+
+    if (req.file) {
+        editItem.image = req.file.filename;
+    }
+
+    const updateItem = await mysql.getConnection().query(
+        'UPDATE ?? SET ? where = ?',
+        ['items', {...editItem}, (req.params.id)]
+    );
+    res.send({message: "Updated"});
+});
 
 router.post('/', upload.single('image'), async (req, res) => {
     if (!req.body.name || !req.body.location || !req.body.category || !req.body.description) {
         return res.status(400).send({error: 'Data not valid'});
     }
-
-    console.log(req.body.name);
-    console.log(req.body.location);
-    console.log(req.body.category);
-    console.log(req.body.description);
 
     let location = null;
     let category = null;
@@ -72,19 +84,12 @@ router.post('/', upload.single('image'), async (req, res) => {
             break;
     };
 
-    console.log('Category: ', category);
-    console.log('Location: ', location);
-
-
     const item  = {
         category_id: category,
         location_id: location,
         name: req.body.name,
         description: req.body.description,
     };
-
-    console.log(item);
-
 
     if (req.file) {
         item.image = req.file.filename;
