@@ -43,7 +43,7 @@ router.put ('/:id', upload.single('image'), async (req, res) => {
 
     const updateItem = await mysql.getConnection().query(
         'UPDATE ?? SET ? where = ?',
-        ['items', {...editItem}, (req.params.id)]
+        ['items', {...editItem}, req.params.id]
     );
     res.send({message: "Updated"});
 });
